@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Hotel Reservation Admin Dashboard
+
+A hotel reservation administration dashboard built with React, TypeScript, Next.js, shadcn/ui, and Tailwind CSS. This application provides an interface for hotel administrators to manage reservations with CRUD operations.
+
+## Features
+
+- **Dashboard View**: Overview with key metrics and today's arrivals
+- **Reservation Management**:
+  - View all reservations with filtering and sorting capabilities
+  - Create new reservations
+  - View detailed reservation information
+  - Edit reservation details
+  - Cancel reservations
+  - Check-in and check-out guests
+
+## Technology Stack
+
+- **Frontend Framework**: React with Next.js
+- **Language**: TypeScript
+- **UI Components**: shadcn/ui
+- **Styling**: Tailwind CSS
+- **State Management**: React Hooks
+- **Data Fetching**: Fetch API
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Node.js (v18.0.0 or higher)
+- pnpm (v7.0.0 or higher)
+
+### Installation
+
+1. Clone the repository
+   ```bash
+   git clone <repository-url>
+   cd hotel-dashboard
+   ```
+
+2. Install dependencies
+   ```bash
+   pnpm install
+   ```
+
+3. Start the development server
+   ```bash
+   pnpm dev
+   ```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
+
+## Project Structure
+
+```
+hotel-dashboard/
+├── src/
+│   ├── app/                      # Next.js App Router
+│   │   ├── dashboard/            # Dashboard page
+│   │   ├── reservations/         # Reservations list and detail pages
+│   │   ├── layout.tsx            # Root layout
+│   │   └── page.tsx              # Root page (redirects to dashboard)
+│   ├── components/               # React components
+│   │   ├── ui/                   # UI components from shadcn
+│   │   └── sidebar.tsx           # Navigation sidebar
+│   └── lib/                      # Utility functions and types
+│       ├── api.ts                # API service
+│       ├── types.ts              # TypeScript types
+│       ├── utils.ts              # Utility functions
+│       └── ui-helpers.ts         # UI helper functions
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Backend API
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The application is designed to work with a RESTful API at the `/frontend_api` endpoint. For detailed API documentation, please refer to the provided API documentation.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Contributing
 
-## Learn More
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-To learn more about Next.js, take a look at the following resources:
+## License
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is a prototype for demonstration purposes. It is not intended for production use as-is without proper security considerations and comprehensive testing.
