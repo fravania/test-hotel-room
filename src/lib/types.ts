@@ -298,6 +298,7 @@ export type CreateReservationResponse = {
 
 export type PatchReservationRequest = {
   notes?: string;
+  bookingChannel?: string;
   stays?: Array<{
     stayId: number;
     arrivalDate?: string;

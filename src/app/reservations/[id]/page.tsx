@@ -22,20 +22,20 @@ import { reservationApi } from "@/lib/api";
 import { formatDateString, getStatusLabel } from "@/lib/utils";
 import { getStatusColor } from "@/lib/ui-helpers";
 import { DeleteReservationDialog } from "@/components/reservations";
+import React from "react";
 
 // Define proper type for params
 interface PageProps {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 }
 
 // This component handles showing reservation details and actions
 export default function ReservationDetail({ params }: PageProps) {
   const router = useRouter();
   // Access the ID directly for now, but save in a const to prepare for future Next.js changes
-  const reservationId = params.id;
-  
+  const { id } = React.use(params);
+  const reservationId = id;
+
   const [reservation, setReservation] = useState<DetailedReservation | null>(
     null
   );
@@ -47,7 +47,9 @@ export default function ReservationDetail({ params }: PageProps) {
     const fetchReservation = async () => {
       try {
         setLoading(true);
-        const data = await reservationApi.getReservationById(Number(reservationId));
+        const data = await reservationApi.getReservationById(
+          Number(reservationId)
+        );
         setReservation(data);
       } catch (error) {
         console.error("Error fetching reservation:", error);
@@ -92,7 +94,9 @@ export default function ReservationDetail({ params }: PageProps) {
       toast.success("Guest checked in successfully");
 
       // Refresh data
-      const data = await reservationApi.getReservationById(Number(reservationId));
+      const data = await reservationApi.getReservationById(
+        Number(reservationId)
+      );
       setReservation(data);
     } catch (error) {
       console.error("Error checking in guest:", error);
@@ -110,7 +114,9 @@ export default function ReservationDetail({ params }: PageProps) {
       toast.success("Guest checked out successfully");
 
       // Refresh data
-      const data = await reservationApi.getReservationById(Number(reservationId));
+      const data = await reservationApi.getReservationById(
+        Number(reservationId)
+      );
       setReservation(data);
     } catch (error) {
       console.error("Error checking out guest:", error);
@@ -297,7 +303,9 @@ export default function ReservationDetail({ params }: PageProps) {
 
                 <div className="space-y-1">
                   <p className="text-sm font-medium">Status</p>
-                  <Badge className={`${getStatusColor(statusLabel)} capitalize`}>
+                  <Badge
+                    className={`${getStatusColor(statusLabel)} capitalize`}
+                  >
                     {statusLabel}
                   </Badge>
                 </div>
@@ -323,7 +331,12 @@ export default function ReservationDetail({ params }: PageProps) {
               <div className="grid gap-6 md:grid-cols-1 mt-4">
                 <div className="space-y-1">
                   <p className="text-sm font-medium">Rate per Night</p>
-                  <p>Rp {stay.RateAmount ? parseFloat(stay.RateAmount).toLocaleString() : "2.500.000"}</p>
+                  <p>
+                    Rp{" "}
+                    {stay.RateAmount
+                      ? parseFloat(stay.RateAmount).toLocaleString()
+                      : "2.500.000"}
+                  </p>
                 </div>
               </div>
 
@@ -334,12 +347,17 @@ export default function ReservationDetail({ params }: PageProps) {
                   <p className="text-sm font-medium">Total Nights:</p>
                 </div>
                 <div className="space-y-1 text-right">
-                  <p>{(() => {
-                    const arrivalDate = new Date(stay.ArrivalDate);
-                    const departureDate = new Date(stay.DepartureDate);
-                    const diffTime = departureDate.getTime() - arrivalDate.getTime();
-                    return diffTime > 0 ? Math.ceil(diffTime / (1000 * 60 * 60 * 24)) : 1;
-                  })()}</p>
+                  <p>
+                    {(() => {
+                      const arrivalDate = new Date(stay.ArrivalDate);
+                      const departureDate = new Date(stay.DepartureDate);
+                      const diffTime =
+                        departureDate.getTime() - arrivalDate.getTime();
+                      return diffTime > 0
+                        ? Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+                        : 1;
+                    })()}
+                  </p>
                 </div>
               </div>
 
@@ -348,15 +366,22 @@ export default function ReservationDetail({ params }: PageProps) {
                   <p className="text-sm font-medium">Total Amount:</p>
                 </div>
                 <div className="space-y-1 text-right">
-                  <p>Rp {(() => {
-                    if (!stay.RateAmount) return "0";
-                    const rate = parseFloat(stay.RateAmount);
-                    const arrivalDate = new Date(stay.ArrivalDate);
-                    const departureDate = new Date(stay.DepartureDate);
-                    const diffTime = departureDate.getTime() - arrivalDate.getTime();
-                    const nights = diffTime > 0 ? Math.ceil(diffTime / (1000 * 60 * 60 * 24)) : 1;
-                    return (rate * nights).toLocaleString();
-                  })()}</p>
+                  <p>
+                    Rp{" "}
+                    {(() => {
+                      if (!stay.RateAmount) return "0";
+                      const rate = parseFloat(stay.RateAmount);
+                      const arrivalDate = new Date(stay.ArrivalDate);
+                      const departureDate = new Date(stay.DepartureDate);
+                      const diffTime =
+                        departureDate.getTime() - arrivalDate.getTime();
+                      const nights =
+                        diffTime > 0
+                          ? Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+                          : 1;
+                      return (rate * nights).toLocaleString();
+                    })()}
+                  </p>
                 </div>
               </div>
 
@@ -398,8 +423,13 @@ export default function ReservationDetail({ params }: PageProps) {
                     <p className="text-sm font-medium">Total Amount:</p>
                   </div>
                   <div className="space-y-1 text-right">
-                    <p>{folio.Amount && parseFloat(folio.Amount) < 0 ? "" : "+"}
-                      Rp {folio.Amount ? parseFloat(folio.Amount).toLocaleString() : "0"}</p>
+                    <p>
+                      {folio.Amount && parseFloat(folio.Amount) < 0 ? "" : "+"}
+                      Rp{" "}
+                      {folio.Amount
+                        ? parseFloat(folio.Amount).toLocaleString()
+                        : "0"}
+                    </p>
                   </div>
                 </div>
 
@@ -423,9 +453,16 @@ export default function ReservationDetail({ params }: PageProps) {
                   <p className="text-sm font-medium">Balance:</p>
                 </div>
                 <div className="space-y-1 text-right">
-                  <p>Rp {reservation.folios.reduce((total, folio) => {
-                    return total + (folio.Amount ? parseFloat(folio.Amount) : 0);
-                  }, 0).toLocaleString()}</p>
+                  <p>
+                    Rp{" "}
+                    {reservation.folios
+                      .reduce((total, folio) => {
+                        return (
+                          total + (folio.Amount ? parseFloat(folio.Amount) : 0)
+                        );
+                      }, 0)
+                      .toLocaleString()}
+                  </p>
                 </div>
               </div>
             </>

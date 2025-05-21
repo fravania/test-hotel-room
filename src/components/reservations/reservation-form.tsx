@@ -226,13 +226,36 @@ export const ReservationForm = ({
       const firstStay = initialData.reservationStays[0] || {};
       const nameInfo = initialData.profile.nameInfos[0] || {};
 
+      // Format dates from ISO format to YYYY-MM-DD for date inputs
+      const formatDateForInput = (isoDate: string): string => {
+        if (!isoDate) return "";
+        try {
+          // Parse the date and handle it in a timezone-safe way
+          const date = new Date(isoDate);
+          // Get year, month, and day parts individually and format as YYYY-MM-DD
+          const year = date.getFullYear();
+          // getMonth() is 0-indexed, so add 1 to get the correct month
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const day = String(date.getDate()).padStart(2, '0');
+          return `${year}-${month}-${day}`;
+        } catch (error) {
+          console.error("Error parsing date:", isoDate, error);
+          return "";
+        }
+      };
+
+      console.log("Initial dates from API:", {
+        arrival: firstStay.ArrivalDate,
+        departure: firstStay.DepartureDate
+      });
+
       return {
         FirstName: nameInfo.FirstName || "",
         LastName: nameInfo.LastName || "",
         EmailAddress: initialData.profile.EmailAddress || "",
         PhoneNumber: initialData.profile.PhoneNumber || "",
-        ArrivalDate: firstStay.ArrivalDate || "",
-        DepartureDate: firstStay.DepartureDate || "",
+        ArrivalDate: formatDateForInput(firstStay.ArrivalDate),
+        DepartureDate: formatDateForInput(firstStay.DepartureDate),
         RoomTypeID: Number(firstStay.RoomTypeID) ||
           Number(firstStay.roomType?.RoomTypeCode || "0"),
         AdultCount: Number(firstStay.AdultCount) || 1,
@@ -275,23 +298,104 @@ export const ReservationForm = ({
     defaultValues: getDefaultValues(),
   });
 
+  // Set form values from initialData after the component mounts
+  useEffect(() => {
+    if (isEditing && initialData) {
+      const firstStay = initialData.reservationStays[0] || {};
+      const nameInfo = initialData.profile.nameInfos[0] || {};
+
+      // Format dates from ISO format to YYYY-MM-DD for date inputs
+      const formatDateForInput = (isoDate: string): string => {
+        if (!isoDate) return "";
+        try {
+          // Parse the date and handle it in a timezone-safe way
+          const date = new Date(isoDate);
+          // Get year, month, and day parts individually and format as YYYY-MM-DD
+          const year = date.getFullYear();
+          // getMonth() is 0-indexed, so add 1 to get the correct month
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const day = String(date.getDate()).padStart(2, '0');
+          return `${year}-${month}-${day}`;
+        } catch (error) {
+          console.error("Error parsing date:", isoDate, error);
+          return "";
+        }
+      };
+
+      // Set form values explicitly to ensure they're updated
+      const arrivalDate = formatDateForInput(firstStay.ArrivalDate);
+      const departureDate = formatDateForInput(firstStay.DepartureDate);
+
+      console.log("Setting dates:", { arrivalDate, departureDate, original: firstStay.ArrivalDate });
+      
+      form.setValue("FirstName", nameInfo.FirstName || "");
+      form.setValue("LastName", nameInfo.LastName || "");
+      form.setValue("EmailAddress", initialData.profile.EmailAddress || "");
+      form.setValue("PhoneNumber", initialData.profile.PhoneNumber || "");
+      form.setValue("ArrivalDate", arrivalDate);
+      form.setValue("DepartureDate", departureDate);
+      form.setValue("RoomTypeID", Number(firstStay.RoomTypeID) || 
+        Number(firstStay.roomType?.RoomTypeCode || "0"));
+      form.setValue("AdultCount", Number(firstStay.AdultCount) || 1);
+      form.setValue("ChildCount", Number(firstStay.ChildCount) || 0);
+      form.setValue("RateAmount", Number(firstStay.RateAmount) || 0);
+      form.setValue("BookingChannelCode", initialData.BookingChannelCode || "DIRECT_WEB");
+      form.setValue("PropertyID", Number(initialData.PropertyID) || 1);
+      form.setValue("Notes", initialData.Notes || "");
+    }
+  }, [isEditing, initialData, form]);
+
   const onSubmit = async (data: ReservationFormValues) => {
     try {
       setIsSubmitting(true);
 
+      // Convert date strings to ISO format for API
+      const formatDateToISO = (dateString: string): string => {
+        if (!dateString) return "";
+        // Create a date object from the YYYY-MM-DD string
+        // and return the ISO string with time component
+        const date = new Date(dateString);
+        return date.toISOString();
+      };
+
+      // Format dates for API
+      const arrivalDateISO = formatDateToISO(data.ArrivalDate);
+      const departureDateISO = formatDateToISO(data.DepartureDate);
+      
+      console.log("Date conversion:", {
+        original: {
+          arrival: data.ArrivalDate,
+          departure: data.DepartureDate
+        },
+        converted: {
+          arrival: arrivalDateISO,
+          departure: departureDateISO
+        }
+      });
+
       if (isEditing && initialData) {
         // Update existing reservation
+        const firstStay = initialData.reservationStays[0] || {};
+        const stayId = firstStay.ReservationStayID || 1;
+        
+        // Include all fields like in create flow, following the PatchReservationRequest type
         const patchData: PatchReservationRequest = {
+          notes: data.Notes,
+          bookingChannel: data.BookingChannelCode,
           stays: [
             {
-              stayId: 1, // Assuming the first stay's ID
-              arrivalDate: data.ArrivalDate,
-              departureDate: data.DepartureDate,
+              stayId: stayId, // Use the actual stay ID
+              arrivalDate: arrivalDateISO,
+              departureDate: departureDateISO,
               roomTypeId: data.RoomTypeID,
+              adultCount: data.AdultCount || 0,
+              childCount: data.ChildCount || 0,
+              rateAmount: data.RateAmount || 0,
             },
           ],
         };
 
+        console.log("Sending update request:", patchData);
         await reservationApi.updateReservation(
           initialData.ReservationID,
           patchData
@@ -307,8 +411,8 @@ export const ReservationForm = ({
           stays: [
             {
               roomTypeId: data.RoomTypeID,
-              arrivalDate: data.ArrivalDate,
-              departureDate: data.DepartureDate,
+              arrivalDate: arrivalDateISO,
+              departureDate: departureDateISO,
               adultCount: data.AdultCount || 0,
               childCount: data.ChildCount || 0,
               rateAmount: data.RateAmount || 0,

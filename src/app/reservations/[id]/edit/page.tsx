@@ -8,20 +8,19 @@ import { ArrowLeft } from "lucide-react";
 import { DetailedReservation } from "@/lib/types";
 import { reservationApi } from "@/lib/api";
 import { ReservationForm } from "@/components/reservations";
-
-interface EditReservationParams {
-  id: string;
-}
+import React from "react";
 
 export default function EditReservation({
   params,
 }: {
-  params: EditReservationParams;
+  params: Promise<{ id: string }>;
 }) {
   const router = useRouter();
   // Extract ID at the beginning to avoid direct access
-  const { id } = params;
-  const [reservation, setReservation] = useState<DetailedReservation | null>(null);
+  const { id } = React.use(params);
+  const [reservation, setReservation] = useState<DetailedReservation | null>(
+    null
+  );
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -71,8 +70,8 @@ export default function EditReservation({
           <CardTitle>Edit Reservation</CardTitle>
         </CardHeader>
       </Card>
-      
+
       <ReservationForm isEditing initialData={reservation} />
     </div>
   );
-} 
+}

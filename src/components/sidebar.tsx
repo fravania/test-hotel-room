@@ -38,14 +38,14 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="flex h-full w-64 flex-col border-r bg-muted/40">
+    <div className="fixed top-0 left-0 flex h-screen w-64 flex-col border-r bg-muted/40 z-10">
       <div className="flex h-14 items-center border-b px-4">
         <Link className="flex items-center gap-2 font-bold" href="/">
           <Home className="h-5 w-5" />
           <span>Hotel Admin</span>
         </Link>
       </div>
-      <div className="flex-1 overflow-auto py-2">
+      <div className="flex-1 overflow-auto">
         <nav className="grid items-start px-2 text-sm font-medium">
           {navItems.map((item, index) => (
             <Link
