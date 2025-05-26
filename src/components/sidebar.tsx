@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { 
-  LayoutDashboard, 
-  CalendarClock, 
-  Users, 
-  Settings, 
-  Home 
+import {
+  LayoutDashboard,
+  CalendarClock,
+  Users,
+  Settings,
+  Home,
+  CalendarDays,
 } from "lucide-react";
 
 const Sidebar = () => {
@@ -19,6 +20,11 @@ const Sidebar = () => {
       title: "Dashboard",
       href: "/dashboard",
       icon: <LayoutDashboard className="h-5 w-5" />,
+    },
+    {
+      title: "Room Scheduler",
+      href: "/room-scheduler",
+      icon: <CalendarDays className="h-5 w-5" />,
     },
     {
       title: "Reservations",
@@ -66,4 +72,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar; 
+export default Sidebar;
