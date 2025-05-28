@@ -8,6 +8,10 @@ interface Room {
   id: string;
   title: string;
   type: string;
+  floor: string;
+  exposure?: string;
+  attributes?: string[];
+  isClean?: boolean;
   isLocked?: boolean;
 }
 
@@ -19,6 +23,14 @@ interface Booking {
   end_time: number;
   canMove?: boolean;
   canResize?: boolean;
+  confirmationNumber?: string;
+  arrivalDate?: string;
+  departureDate?: string;
+  adult?: number;
+  rate?: string;
+  folioBalance?: string;
+  settlementType?: string;
+  bookingAgency?: string;
   itemProps?: {
     style?: React.CSSProperties;
   };
@@ -38,6 +50,7 @@ interface MoveConfirmation {
   oldStartTime: number;
   oldEndTime: number;
   oldGroupId: string;
+  isResize?: boolean;
 }
 
 interface NewBookingForm {
@@ -53,8 +66,6 @@ interface DeleteConfirmation {
   bookingId: string;
   guestName: string;
 }
-
-/** @note Using any type for itemRenderer due to type incompatibility with react-calendar-timeline's types */
 
 const RoomScheduler: React.FC = () => {
   const [moveConfirmation, setMoveConfirmation] = useState<MoveConfirmation>({
@@ -85,18 +96,114 @@ const RoomScheduler: React.FC = () => {
 
   // Sample room data
   const [rooms] = useState<Room[]>([
-    { id: "101", title: "Room 101", type: "GLSK" },
-    { id: "102", title: "Room 102", type: "GLSK" },
-    { id: "103", title: "Room 103", type: "GLSK" },
-    { id: "104", title: "Room 104", type: "GLSK" },
-    { id: "201", title: "Room 201", type: "DBPK" },
-    { id: "202", title: "Room 202", type: "DBPK" },
-    { id: "203", title: "Room 203", type: "DBPK" },
-    { id: "204", title: "Room 204", type: "DBPK" },
-    { id: "301", title: "Room 301", type: "DLXK" },
-    { id: "302", title: "Room 302", type: "DLXK" },
-    { id: "303", title: "Room 303", type: "DLXK" },
-    { id: "304", title: "Room 304", type: "DLXK" },
+    {
+      id: "101",
+      title: "Room 101",
+      type: "GLSK",
+      floor: "01 Floor",
+      exposure: "Gallery Suite King",
+      attributes: ["HF", "KING", "TUB"],
+      isClean: true,
+    },
+    {
+      id: "102",
+      title: "Room 102",
+      type: "GLSK",
+      floor: "01 Floor",
+      exposure: "Gallery Suite King",
+      attributes: ["HF", "KING", "TUB"],
+      isClean: true,
+    },
+    {
+      id: "103",
+      title: "Room 103",
+      type: "GLSK",
+      floor: "01 Floor",
+      exposure: "Gallery Suite King",
+      attributes: ["HF", "KING", "TUB"],
+      isClean: false,
+    },
+    {
+      id: "104",
+      title: "Room 104",
+      type: "GLSK",
+      floor: "01 Floor",
+      exposure: "Gallery Suite King",
+      attributes: ["HF", "KING", "TUB"],
+      isClean: true,
+    },
+    {
+      id: "201",
+      title: "Room 201",
+      type: "DBPK",
+      floor: "02 Floor",
+      exposure: "Deluxe Balcony Pool King",
+      attributes: ["HF", "KING", "TUB", "BALCONY"],
+      isClean: true,
+    },
+    {
+      id: "202",
+      title: "Room 202",
+      type: "DBPK",
+      floor: "02 Floor",
+      exposure: "Deluxe Balcony Pool King",
+      attributes: ["HF", "KING", "TUB", "BALCONY"],
+      isClean: true,
+    },
+    {
+      id: "203",
+      title: "Room 203",
+      type: "DBPK",
+      floor: "02 Floor",
+      exposure: "Deluxe Balcony Pool King",
+      attributes: ["HF", "KING", "TUB", "BALCONY"],
+      isClean: false,
+    },
+    {
+      id: "204",
+      title: "Room 204",
+      type: "DBPK",
+      floor: "02 Floor",
+      exposure: "Deluxe Balcony Pool King",
+      attributes: ["HF", "KING", "TUB", "BALCONY"],
+      isClean: true,
+    },
+    {
+      id: "301",
+      title: "Room 301",
+      type: "DLXK",
+      floor: "03 Floor",
+      exposure: "Deluxe Lake King",
+      attributes: ["HF", "KING", "TUB", "LAKE"],
+      isClean: true,
+    },
+    {
+      id: "302",
+      title: "Room 302",
+      type: "DLXK",
+      floor: "03 Floor",
+      exposure: "Deluxe Lake King",
+      attributes: ["HF", "KING", "TUB", "LAKE"],
+      isClean: false,
+    },
+    {
+      id: "303",
+      title: "Room 303",
+      type: "DLXK",
+      floor: "03 Floor",
+      exposure: "Deluxe Lake King",
+      attributes: ["HF", "KING", "TUB", "LAKE"],
+      isClean: true,
+    },
+    {
+      id: "304",
+      title: "Room 304",
+      type: "DLXK",
+      floor: "03 Floor",
+      exposure: "Deluxe Lake King",
+      attributes: ["HF", "KING", "TUB", "LAKE"],
+      isClean: true,
+    },
   ]);
 
   // Helper function to create booking times
@@ -116,8 +223,16 @@ const RoomScheduler: React.FC = () => {
   const [bookings, setBookings] = useState<Booking[]>([
     {
       id: "1",
-      group: "101",
-      title: "John Smith - Regular Booking",
+      group: "102",
+      title: "Halim, Susan",
+      confirmationNumber: "27355030-1",
+      arrivalDate: "Thu 03 08 2023",
+      departureDate: "Sun 06 08 2023",
+      adult: 2,
+      rate: "IDR",
+      folioBalance: "-7,000,000 IDR",
+      settlementType: "100",
+      bookingAgency: "WEBBHOTELIER",
       ...createBookingTimes(moment(), 2),
       canMove: true,
       canResize: true,
@@ -133,7 +248,7 @@ const RoomScheduler: React.FC = () => {
       id: "2",
       group: "102",
       title: "VIP Conference (Locked)",
-      ...createBookingTimes(moment().add(1, "days"), 3),
+      ...createBookingTimes(moment().add(3, "days"), 3),
       canMove: false,
       canResize: false,
       itemProps: {
@@ -282,17 +397,17 @@ const RoomScheduler: React.FC = () => {
       return;
     }
 
-    setBookings(
-      bookings.map((item) =>
-        item.id === itemId
-          ? {
-              ...item,
-              start_time: newStartTime,
-              end_time: newEndTime,
-            }
-          : item
-      )
-    );
+    setMoveConfirmation({
+      isOpen: true,
+      itemId,
+      newStartTime,
+      newEndTime,
+      newGroupId: booking.group,
+      oldStartTime: booking.start_time,
+      oldEndTime: booking.end_time,
+      oldGroupId: booking.group,
+      isResize: true,
+    });
   };
 
   const handleConfirmMove = () => {
@@ -366,15 +481,15 @@ const RoomScheduler: React.FC = () => {
     setNewBookingForm((prev) => ({ ...prev, isOpen: false }));
   };
 
-  const handleDeleteClick = (itemId: string) => {
-    const booking = bookings.find((b) => b.id === itemId);
-    if (!booking) return;
-
-    setDeleteConfirmation({
-      isOpen: true,
-      bookingId: itemId,
-      guestName: booking.title,
-    });
+  const handleDeleteClick = (bookingId: string) => {
+    const booking = bookings.find((b) => b.id === bookingId);
+    if (booking) {
+      setDeleteConfirmation({
+        isOpen: true,
+        bookingId,
+        guestName: booking.title,
+      });
+    }
   };
 
   const handleConfirmDelete = () => {
@@ -382,6 +497,10 @@ const RoomScheduler: React.FC = () => {
       bookings.filter((booking) => booking.id !== deleteConfirmation.bookingId)
     );
     setDeleteConfirmation((prev) => ({ ...prev, isOpen: false }));
+  };
+
+  const formatDateTime = (timestamp: number) => {
+    return moment(timestamp).format("DD MMM YYYY");
   };
 
   const itemRenderer = (props: {
@@ -404,28 +523,122 @@ const RoomScheduler: React.FC = () => {
           }}
         >
           <span className="truncate flex-1">{itemContext.title}</span>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleDeleteClick(item.id);
-            }}
-            className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 hover:bg-red-100 rounded-full"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-4 h-4 text-red-600"
+          {item.canMove && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteClick(item.id);
+              }}
+              className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-black/10 rounded"
             >
-              <path
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
-              />
-            </svg>
-          </button>
+              >
+                <path d="M3 6h18" />
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+              </svg>
+            </button>
+          )}
+        </div>
+        {/* Booking tooltip */}
+        <div className="absolute z-[9999] invisible group-hover:visible bg-white border border-gray-200 text-black text-sm rounded-md p-3 -top-2 left-full translate-y-0 min-w-[250px] shadow-lg">
+          <div className="space-y-1">
+            <div className="font-medium">{item.title}</div>
+            <div>Confirmation: {item.confirmationNumber}</div>
+            <div>Arrival: {item.arrivalDate}</div>
+            <div>Departure: {item.departureDate}</div>
+            <div>Adult: {item.adult}</div>
+            <div>Rate: {item.rate}</div>
+            <div>Folio Balance: {item.folioBalance}</div>
+            <div>Settlement Type: {item.settlementType}</div>
+            <div>Booking Agency: {item.bookingAgency}</div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const groupRenderer = ({ group }: { group: Group }) => {
+    const room = rooms.find((r) => r.id === group.id);
+    if (!room) return null;
+
+    return (
+      <div className="group/room relative">
+        <div className="flex items-center px-4 py-2 hover:bg-gray-100">
+          <div className="flex-1">
+            <div className="flex items-center gap-2">
+              <span className="font-medium">{room.title}</span>
+              <span className="text-sm text-gray-600">{room.type}</span>
+            </div>
+          </div>
+          {room.isClean && (
+            <div className="text-blue-500">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2M6 7v-.282c0-.526.422-.943.944-.935L18 6" />
+              </svg>
+            </div>
+          )}
+        </div>
+        {/* Room tooltip */}
+        <div className="absolute z-[100] invisible group-hover/room:visible bg-white border border-gray-200 text-black text-sm rounded-md p-3 left-full top-0 min-w-[250px] shadow-lg ml-2">
+          <div className="font-medium border-b pb-2">{room.title}</div>
+          <div className="space-y-2 pt-2">
+            <div>
+              <div className="text-gray-600">Room Type:</div>
+              <div>{room.exposure}</div>
+            </div>
+            <div>
+              <div className="text-gray-600">Floor:</div>
+              <div>{room.floor}</div>
+            </div>
+            <div>
+              <div className="text-gray-600">Exposure:</div>
+              <div>{room.exposure}</div>
+            </div>
+            <div>
+              <div className="text-gray-600">Room Attributes:</div>
+              <div>{room.attributes?.join(", ")}</div>
+            </div>
+            <div>
+              <div className="text-gray-600">Clean:</div>
+              <div className="flex items-center gap-1">
+                {room.isClean ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2M6 7v-.282c0-.526.422-.943.944-.935L18 6" />
+                  </svg>
+                ) : null}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -445,7 +658,7 @@ const RoomScheduler: React.FC = () => {
       <Timeline
         groups={rooms.map((room) => ({
           id: room.id,
-          title: `${room.title} (${room.type})`,
+          title: room.title,
         }))}
         items={bookings}
         defaultTimeStart={moment().startOf("day").valueOf()}
@@ -454,8 +667,8 @@ const RoomScheduler: React.FC = () => {
         onItemResize={handleItemResize}
         canMove
         canResize
-        minZoom={24 * 60 * 60 * 1000} // 1 day
-        maxZoom={7 * 24 * 60 * 60 * 1000} // 7 days
+        minZoom={24 * 60 * 60 * 1000}
+        maxZoom={7 * 24 * 60 * 60 * 1000}
         timeSteps={{
           second: 0,
           minute: 0,
@@ -467,66 +680,44 @@ const RoomScheduler: React.FC = () => {
         lineHeight={50}
         itemHeightRatio={0.8}
         sidebarWidth={180}
-        className="bg-white rounded-lg shadow-sm"
-        groupRenderer={({ group }: { group: Group }) => {
-          const room = rooms.find((r) => r.id === group.id);
-          return (
-            <div className="flex flex-col py-2 px-4">
-              <span className="font-medium">{room?.title}</span>
-              <span className="text-xs text-muted-foreground">
-                {room?.type}
-              </span>
-            </div>
-          );
-        }}
+        groupRenderer={groupRenderer}
         // @ts-expect-error - Type compatibility issue with react-calendar-timeline
         itemRenderer={itemRenderer}
+        className="bg-white rounded-lg shadow-sm [&_.rct-header-root]:bg-gray-100 [&_.rct-calendar-header]:bg-gray-50 [&_.rct-sidebar]:!overflow-visible"
       />
 
-      {/* Confirmation Modal */}
+      {/* Move/Resize Confirmation Modal */}
       {moveConfirmation.isOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 z-100">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-100">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">Confirm Booking</h3>
+            <h3 className="text-lg font-semibold mb-4">
+              Confirm {moveConfirmation.isResize ? "Resize" : "Move"} Booking
+            </h3>
             <div className="space-y-3">
-              <p>Are you sure you want to move this booking?</p>
+              <p>
+                Are you sure you want to{" "}
+                {moveConfirmation.isResize ? "resize" : "move"} this booking?
+              </p>
               <div className="text-sm space-y-1">
                 <p>
                   <span className="font-medium">From: </span>
-                  {moment(moveConfirmation.oldStartTime).format(
-                    "DD MMM YYYY HH:mm"
-                  )}{" "}
-                  -{" "}
-                  {moment(moveConfirmation.oldEndTime).format(
-                    "DD MMM YYYY HH:mm"
-                  )}
+                  {formatDateTime(moveConfirmation.oldStartTime)} -{" "}
+                  {formatDateTime(moveConfirmation.oldEndTime)}
                 </p>
                 <p>
                   <span className="font-medium">To: </span>
-                  {moment(moveConfirmation.newStartTime).format(
-                    "DD MMM YYYY HH:mm"
-                  )}{" "}
-                  -{" "}
-                  {moment(moveConfirmation.newEndTime).format(
-                    "DD MMM YYYY HH:mm"
-                  )}
+                  {formatDateTime(moveConfirmation.newStartTime)} -{" "}
+                  {formatDateTime(moveConfirmation.newEndTime)}
                 </p>
-                <p>
-                  <span className="font-medium">Room: </span>
-                  {
-                    rooms.find((r) => r.id === moveConfirmation.newGroupId)
-                      ?.title
-                  }
-                </p>
-                <p>
-                  <span className="font-medium">Duration: </span>
-                  {moment
-                    .duration(
-                      moveConfirmation.newEndTime -
-                        moveConfirmation.newStartTime
-                    )
-                    .humanize()}
-                </p>
+                {!moveConfirmation.isResize && (
+                  <p>
+                    <span className="font-medium">Room: </span>
+                    {
+                      rooms.find((r) => r.id === moveConfirmation.newGroupId)
+                        ?.title
+                    }
+                  </p>
+                )}
               </div>
             </div>
             <div className="flex justify-end gap-3 mt-6">
@@ -549,7 +740,7 @@ const RoomScheduler: React.FC = () => {
 
       {/* New Booking Modal */}
       {newBookingForm.isOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 z-100">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-100">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <h3 className="text-lg font-semibold mb-4">Create New Booking</h3>
             <div className="space-y-4">
@@ -647,7 +838,7 @@ const RoomScheduler: React.FC = () => {
 
       {/* Delete Confirmation Modal */}
       {deleteConfirmation.isOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 z-100">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center  z-100">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <h3 className="text-lg font-semibold mb-4">Delete Booking</h3>
             <div className="space-y-3">
