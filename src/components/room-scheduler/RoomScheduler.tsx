@@ -572,8 +572,8 @@ const RoomScheduler: React.FC = () => {
     if (!room) return null;
 
     return (
-      <div className="group/room relative">
-        <div className="flex items-center px-4 py-2 hover:bg-gray-100">
+      <div className="group/room relative hover:bg-gray-200">
+        <div className="flex items-center px-2  ">
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <span className="font-medium">{room.title}</span>
@@ -599,7 +599,7 @@ const RoomScheduler: React.FC = () => {
           )}
         </div>
         {/* Room tooltip */}
-        <div className="absolute z-[100] invisible group-hover/room:visible bg-white border border-gray-200 text-black text-sm rounded-md p-3 left-full top-0 min-w-[250px] shadow-lg ml-2">
+        <div className="absolute z-[9999] invisible group-hover/room:visible bg-white border border-gray-200 text-black text-sm rounded-md p-3 left-full top-0 min-w-[250px] shadow-lg ml-2">
           <div className="font-medium border-b pb-2">{room.title}</div>
           <div className="space-y-2 pt-2">
             <div>
